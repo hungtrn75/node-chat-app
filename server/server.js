@@ -1,24 +1,17 @@
-const path = require('path');
 const express = require('express');
-const socketIO = require('socket.io');
 const http = require('http');
-
-// var app = require('express')();
-// var http = require('http').Server(app);
-// var io = require('socket.io')(http);
-
-const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 
 var app = express();
-var server = http.createServer(app);
-var io = socketIO(server);
+//var server = http.createServer(app);
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
 var { genarateMessage } = require('./utils/message');
 
-app.use(express.static(publicPath));
-// app.get('/', (req, res) => {
-//     res.sendFile(publicPath+'/index.html');
-// })
+app.use(express.static(__dirname+'../../public'));
+app.get('/', (req, res) => {
+    res.sendFile(__dirname+'/index.html');
+})
 
 io.on('connection', socket => {
     console.log('A user connected');
@@ -42,4 +35,3 @@ io.on('connection', socket => {
 server.listen(port, () => {
     console.log(`Server is listening on ${port}`);
 })
-
