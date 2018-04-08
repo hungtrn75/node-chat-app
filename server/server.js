@@ -8,9 +8,9 @@ var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var { genarateMessage } = require('./utils/message');
 
-app.use(express.static(__dirname+'../../public'));
+app.use(express.static(__dirname + '../../public'));
 app.get('/', (req, res) => {
-    res.sendFile(__dirname+'/index.html');
+    res.sendFile(__dirname + '/index.html');
 })
 
 io.on('connection', socket => {
@@ -25,6 +25,11 @@ io.on('connection', socket => {
         console.log('createMessage', message);
         io.emit('newMessage', genarateMessage(message.from, message.text));
         callback('This is from server');
+    })
+
+    socket.on('createLocationMessage', location => {
+        var img_url = `https://maps.googleapis.com/maps/api/staticmap?center=${location.lat},${location.lng}&zoom=14&size=400x300&key=AIzaSyCoCP8jFNbHVDFVrvGHhwCev8hMbRTpPWA`;
+        io.emit('newMessage', genarateMessage('Location: ',`<img src=${img_url}>`));
     })
 
     socket.on('disconnect', () => {
