@@ -13,6 +13,7 @@ const port = process.env.PORT || 3000;
 var app = express();
 var server = http.createServer(app);
 var io = socketIO(server);
+var { genarateMessage } = require('./utils/message');
 
 app.use(express.static(publicPath));
 // app.get('/', (req, res) => {
@@ -24,18 +25,9 @@ io.on('connection', socket => {
     let from = 'Admin';
     let textWel = 'Welcome to my chat app';
     let textNC = 'New user joined';
-    let createdAt = new Date().getTime();
-    socket.emit('newMessage', {
-        from,
-        textWel,
-        createdAt
-    });
+    socket.emit('newMessage', genarateMessage(from, textWel));
 
-    socket.broadcast.emit('newMessage', {
-        from,
-        textNC,
-        createdAt
-    })
+    socket.broadcast.emit('newMessage', genarateMessage(from, textNC));
     socket.on('createMessage', message => {
         let { from, text } = message;
         socket.broadcast.emit('newMessage', {
