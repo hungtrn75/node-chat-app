@@ -28,13 +28,10 @@ io.on('connection', socket => {
     socket.emit('newMessage', genarateMessage(from, textWel));
 
     socket.broadcast.emit('newMessage', genarateMessage(from, textNC));
-    socket.on('createMessage', message => {
-        let { from, text } = message;
-        socket.broadcast.emit('newMessage', {
-            from,
-            text,
-            createdAt: new Date().getTime()
-        })
+    socket.on('createMessage', (message, callback) => {
+        console.log('createMessage', message);
+        io.emit('newMessage', genarateMessage(message.from, message.text));
+        callback('This is from server');
     })
 
     socket.on('disconnect', () => {
