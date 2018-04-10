@@ -9,11 +9,11 @@ socket.on('connect', () => {
 
 socket.on('newMessage', message => {
     console.log('newMessage: ', message);
-    $('#message').append(`<li>${message.from}: ${message.text}</li>`);
+    $('#messages').append(`<li>${message.from}: ${message.text}</li>`);
 })
 
 socket.on('newLocationMessage', message => {
-    $('#message').append(`<li>${message.from}: <a href="${message.url}" target="_blank">My location</a></li>`)
+    $('#messages').append(`<li>${message.from}: <a href="${message.url}" target="_blank">My location</a></li>`)
 })
 socket.on('disconnect', () => {
     console.log("disconnected from server");
@@ -34,9 +34,10 @@ $('#locationBtn').on('click', () => {
         navigator.geolocation.getCurrentPosition(position => {
             socket.emit('createLocationMessage', {
                 lat: position.coords.latitude,
-                lng:position.coords.longitude
+                lng: position.coords.longitude
             })
         }, () => {
+            $('#locationBtn').attr('disabled', 'disabled');
             alert('Unable to fetch location');
         });
     } else {
