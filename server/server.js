@@ -6,7 +6,7 @@ var app = express();
 //var server = http.createServer(app);
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
-var { genarateMessage } = require('./utils/message');
+var { genarateMessage, genarateLocationMessage } = require('./utils/message');
 
 app.use(express.static(__dirname + '../../public'));
 app.get('/', (req, res) => {
@@ -28,8 +28,7 @@ io.on('connection', socket => {
     })
 
     socket.on('createLocationMessage', location => {
-        var img_url = `https://maps.googleapis.com/maps/api/staticmap?center=${location.lat},${location.lng}&zoom=14&size=400x300&key=AIzaSyCoCP8jFNbHVDFVrvGHhwCev8hMbRTpPWA`;
-        io.emit('newMessage', genarateMessage('Location: ',`<img src=${img_url}>`));
+        io.emit('newLocationMessage', genarateLocationMessage('Admin', location));
     })
 
     socket.on('disconnect', () => {
