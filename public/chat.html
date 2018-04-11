@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chatroom</title>
+    <link href="/css/styles.css" rel="stylesheet">
+</head>
+
+<body class="chat">
+
+    <div class="chat__sidebar">
+        <h3>People</h3>
+        <div id="user"></div>
+    </div>
+
+    <div class="chat__main">
+        <ol class="chat__messages" id="messages"></ol>
+        <div class="chat__footer">
+            <form id="message-form">
+                <input type="text" class="" id="txtMessage" palceholder="Message" autocomplete="off" autofocus/>
+                <button type="submit">Send</button>
+            </form>
+            <button id="locationBtn">Send location</button>
+        </div>
+    </div>
+    <script id="message-template" type="text/template">
+        <li class="message">
+            <div class="message__title">
+                <h4>{{from}}</h4>
+                <span>{{createdAt}}</span>
+            </div>
+            <div>
+                <p>{{text}}</p>
+            </div>
+        </li>
+    </script>
+    <script id="location-message-template" type="text/template">
+        <li class="message">
+            <div class="message__title">
+                <h4>{{from}}</h4>
+                <span>{{createdAt}}</span>
+            </div>
+            <div>
+                <a href="{{url}}" target="_blank">My current location</a>
+            </div>
+        </li>
+    </script>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Socket.io -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.dev.js"></script>
+    <script src="/js/chat.js"></script>
+    <script src="/js/moment.min.js"></script>
+    <script src="/js/mustache.min.js"></script>
+</body>
+
+</html>
