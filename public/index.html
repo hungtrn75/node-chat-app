@@ -26,13 +26,35 @@
             <button id="locationBtn">Send location</button>
         </div>
     </div>
-
+    <script id="message-template" type="text/template">
+        <li class="message">
+            <div class="message__title">
+                <h4>{{from}}</h4>
+                <span>{{createdAt}}</span>
+            </div>
+            <div>
+                <p>{{text}}</p>
+            </div>
+        </li>
+    </script>
+    <script id="location-message-template" type="text/template">
+        <li class="message">
+            <div class="message__title">
+                <h4>{{from}}</h4>
+                <span>{{createdAt}}</span>
+            </div>
+            <div>
+                <a href="{{url}}" target="_blank">My current location</a>
+            </div>
+        </li>
+    </script>
     <!-- jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <!-- Socket.io -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.1.0/socket.io.dev.js"></script>
     <script src="/js/index.js"></script>
     <script src="/js/moment.min.js"></script>
+    <script src="/js/mustache.min.js"></script>
 </body>
 
 </html>
