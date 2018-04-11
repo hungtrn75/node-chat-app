@@ -8,12 +8,13 @@ socket.on('connect', () => {
 });
 
 socket.on('newMessage', message => {
-    console.log('newMessage: ', message);
-    $('#messages').append(`<li>${message.from}: ${message.text}</li>`);
+    let formattedTime = moment(message.createdAt).format('h:mm a');
+    $('#messages').append(`<li>[${formattedTime}] - ${message.from}: ${message.text}</li>`);
 })
 
 socket.on('newLocationMessage', message => {
-    $('#messages').append(`<li>${message.from}: <a href="${message.url}" target="_blank">My location</a></li>`)
+    let formattedTime = moment(message.createdAt).format('h:mm a');
+    $('#messages').append(`<li>[${formattedTime}] - ${message.from}: <a href="${message.url}" target="_blank">My location</a></li>`)
 })
 socket.on('disconnect', () => {
     console.log("disconnected from server");
