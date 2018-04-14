@@ -17,22 +17,23 @@ app.get('/', (req, res) => {
 })
 
 io.on('connection', socket => {
-    console.log('New user connected');
-    let admin = 'Admin';
-    let textWel = 'Welcome to my chat app';
-
     socket.on('join', (params, callback) => {
-        if (!isRealName(params.name) && !isRealName(params.room)) {
+        if (!isRealName(params.name) || !isRealName(params.room)) {
             callback('Name is invalid');
         }
-        socket.join(params.room);
-        users.addUser(socket.id, params.name, params.room);
-        io.to(params.room).emit('updateUserList', users.getUserList(params.room));
-        let textNC = `${params.name} has joined chatroom`;
-        socket.emit('newMessage', genarateMessage(admin, textWel));
-        socket.broadcast.to(params.room).emit('newMessage', genarateMessage(admin, textNC));
+        let user = users.users.filter(user => user.name === params.name && user.room === params.room);
+        if (user[0]) {
+            callback(`${params.name} is exist in room ${params.room}`);
+        } else {
+            console.log('New user connected');
+            socket.join(params.room);
+            users.addUser(socket.id, params.name, params.room);
+            io.to(params.room).emit('updateUserList', users.getUserList(params.room));
+            socket.emit('newMessage', genarateMessage('Admin', 'Welcome to my chat app'));
+            socket.broadcast.to(params.room).emit('newMessage', genarateMessage('Admin', `${params.name} has joined chatroom`));
 
-        callback();
+            callback();
+        }
     })
 
     socket.on('createMessage', (message, callback) => {
@@ -54,7 +55,8 @@ io.on('connection', socket => {
         let user = users.removeUser(socket.id);
         if (user) {
             io.to(user.room).emit('updateUserList', users.getUserList(user.room));
-            io.to(user.room).emit('newMessage', genarateMessage(admin, `${user.name} has left chat room`));
+            io.to(user.room).emit('newMessage', genarateMessage('Admin', `${user.name} has left chat room`));
+            console.log('A user disconnected');
         }
     })
 })
