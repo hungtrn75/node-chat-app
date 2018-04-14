@@ -55,7 +55,7 @@ socket.on('newLocationMessage', message => {
     let formattedTime = moment(message.createdAt).format('h:mm a');
     //$('#messages').append(`<li>[${formattedTime}] - ${message.from}: <a href="${message.url}" target="_blank">My location</a></li>`)
     let html = Mustache.render($('#location-message-template').html(), {
-        text: message.txt,
+        url: message.url,
         from: message.from,
         createdAt: formattedTime
     });

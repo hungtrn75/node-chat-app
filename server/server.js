@@ -17,10 +17,10 @@ app.get('/', (req, res) => {
 })
 
 io.on('connection', socket => {
-    console.log('A user connected');
+    console.log('New user connected');
     let admin = 'Admin';
     let textWel = 'Welcome to my chat app';
-    
+
     socket.on('join', (params, callback) => {
         if (!isRealName(params.name) && !isRealName(params.room)) {
             callback('Name is invalid');
@@ -31,25 +31,30 @@ io.on('connection', socket => {
         let textNC = `${params.name} has joined chatroom`;
         socket.emit('newMessage', genarateMessage(admin, textWel));
         socket.broadcast.to(params.room).emit('newMessage', genarateMessage(admin, textNC));
-        
+
         callback();
     })
 
     socket.on('createMessage', (message, callback) => {
-        console.log('createMessage', message);
-        io.emit('newMessage', genarateMessage(message.from, message.text));
+        let user = users.getUser(socket.id);
+        if (user && isRealName(message.text)) {
+            io.to(user.room).emit('newMessage', genarateMessage(message.from, message.text));
+        }
         callback('This is from server');
     })
 
     socket.on('createLocationMessage', location => {
-        io.emit('newLocationMessage', genarateLocationMessage(admin, location));
+        let user = users.getUser(socket.id);
+        if (user) {
+            io.to(user.room).emit('newLocationMessage', genarateLocationMessage(user.name, location));
+        }
     })
 
     socket.on('disconnect', () => {
         let user = users.removeUser(socket.id);
         if (user) {
             io.to(user.room).emit('updateUserList', users.getUserList(user.room));
-            io.to(user.room).emit('newMessage', genarateMessage(admin,`${user.name} has left chat room`));
+            io.to(user.room).emit('newMessage', genarateMessage(admin, `${user.name} has left chat room`));
         }
     })
 })
