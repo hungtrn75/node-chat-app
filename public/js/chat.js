@@ -20,7 +20,24 @@ socket.on('connect', () => {
     socket.on('newEmail', (email) => {
         console.log(email);
     })
-});
+    var params = $.deparam(window.location.search);
+    socket.emit('join', params, err => {
+        if (err) {
+            alert('err');
+            window.location.href = '/';
+        } else {
+            console.log('Not error!');
+        }
+    })
+})
+
+socket.on('updateUserList', users => {
+    let ol = $('<ol></ol>');
+    users.forEach(user => {
+        ol.append($('<li></li>').text(user));
+    });
+    $('#users').html(ol);
+})
 
 socket.on('newMessage', message => {
     let formattedTime = moment(message.createdAt).format('h:mm:ss a');
@@ -51,8 +68,9 @@ socket.on('disconnect', () => {
 
 $('#message-form').on('submit', e => {
     e.preventDefault();
+    var params = $.deparam(window.location.search);
     socket.emit('createMessage', {
-        from: 'user',
+        from: params.name,
         text: $('#txtMessage').val()
     }, () => {
         $('#txtMessage').val('');

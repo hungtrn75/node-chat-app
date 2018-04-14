@@ -1,12 +1,15 @@
 const express = require('express');
 const http = require('http');
 const port = process.env.PORT || 3000;
+const { Users } = require('./utils/users');
 
 var app = express();
 //var server = http.createServer(app);
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 var { genarateMessage, genarateLocationMessage } = require('./utils/message');
+var { isRealName } = require('./utils/validation');
+var users = new Users();
 
 app.use(express.static(__dirname + '../../public'));
 app.get('/', (req, res) => {
@@ -15,12 +18,23 @@ app.get('/', (req, res) => {
 
 io.on('connection', socket => {
     console.log('A user connected');
-    let from = 'Admin';
+    let admin = 'Admin';
     let textWel = 'Welcome to my chat app';
-    let textNC = 'New user joined';
-    socket.emit('newMessage', genarateMessage(from, textWel));
+    
+    socket.on('join', (params, callback) => {
+        if (!isRealName(params.name) && !isRealName(params.room)) {
+            callback('Name is invalid');
+        }
+        socket.join(params.room);
+        users.addUser(socket.id, params.name, params.room);
+        io.to(params.room).emit('updateUserList', users.getUserList(params.room));
+        let textNC = `${params.name} has joined chatroom`;
+        socket.emit('newMessage', genarateMessage(admin, textWel));
+        socket.broadcast.to(params.room).emit('newMessage', genarateMessage(admin, textNC));
+        
+        callback();
+    })
 
-    socket.broadcast.emit('newMessage', genarateMessage(from, textNC));
     socket.on('createMessage', (message, callback) => {
         console.log('createMessage', message);
         io.emit('newMessage', genarateMessage(message.from, message.text));
@@ -28,11 +42,15 @@ io.on('connection', socket => {
     })
 
     socket.on('createLocationMessage', location => {
-        io.emit('newLocationMessage', genarateLocationMessage('Admin', location));
+        io.emit('newLocationMessage', genarateLocationMessage(admin, location));
     })
 
     socket.on('disconnect', () => {
-        console.log('user was disconnected');
+        let user = users.removeUser(socket.id);
+        if (user) {
+            io.to(user.room).emit('updateUserList', users.getUserList(user.room));
+            io.to(user.room).emit('newMessage', genarateMessage(admin,`${user.name} has left chat room`));
+        }
     })
 })
 

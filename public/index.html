@@ -17,11 +17,11 @@
             </div>
             <div class="form-field">
                 <lable>Display name</lable>
-                <input type="text" name="name"  autofocus/>
+                <input type="text" name="name" pattern="^[a-zA-Z0-9\s]*$" title="Display name" required autofocus/>
             </div>
             <div class="form-field">
                 <label>Room name</label>
-                <input type="text" name="room"/>
+                <input type="text" name="room" pattern="^[a-zA-Z0-9\s]*$" title="Room name" required/>
             </div>
             <div class="form-field">
                 <button>Join</button>
